@@ -1,7 +1,6 @@
-import { Component } from '@angular/core';
+import { Component , signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {CdkDrag,  } from '@angular/cdk/drag-drop';
-import { OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgClass } from '@angular/common';
 
@@ -14,10 +13,10 @@ import { NgClass } from '@angular/common';
 })
 export class AppComponent {
   title = 'googleCalendar';
-  mouseDown = 0;
+  mouseDown:number = 0;
   showDialog = false;
   mounth:string[]  = []
-  damyData = [
+  damyData = signal( [
     [
     {
       selected:false,
@@ -676,7 +675,7 @@ export class AppComponent {
       value:23
     },
   ] ,
- ]
+ ])
  date = new Date()
  weekDays:{
   date:string,
@@ -805,6 +804,16 @@ export class AppComponent {
 
  closeDialog() {
    this.showDialog = false;
+   //deselect the selected column
+   const newData = this.damyData()[this.mouseDown]?.map((item:any) =>{
+     return {
+       ...item,
+       selected:false
+      }
+    })
+    console.log("close" , newData , this.mouseDown)
+   this.damyData()[this.mouseDown] = newData
+   this.mouseDown = 0
  }
   ngOnInit(): void {
     this.getWeekDates();
@@ -820,25 +829,24 @@ export class AppComponent {
    let indexs = event.target.id.split("-")
    this.mouseDown = indexs[0]
   //  let newData = this.damyData[indexs[0]][indexs[1]]
-   this.damyData[indexs[0]][indexs[1]] = {
-    selected: !this.damyData[indexs[0]][indexs[1]].selected,
-    value:this.damyData[indexs[0]][indexs[1]].value
+   this.damyData()[indexs[0]][indexs[1]] = {
+    selected: !this.damyData()[indexs[0]][indexs[1]].selected,
+    value:this.damyData()[indexs[0]][indexs[1]].value
    }
    
   }
   handleMouseMove(event:any) {
-    console.log("move", event.target.id) 
     let indexs = event.target.id.split("-")
     if (indexs[0] !== this.mouseDown)return
 
-    this.damyData[indexs[0]][indexs[1]] = {
+    this.damyData()[indexs[0]][indexs[1]] = {
       selected: true,
-      value:this.damyData[indexs[0]][indexs[1]].value
+      value:this.damyData()[indexs[0]][indexs[1]].value
      }
   }
   handleMouseUp(event:any){
     console.log("up", event.target.id)
-    this.mouseDown = 0
+    // this.mouseDown = 0
     this.showDialog = true
   }
 
