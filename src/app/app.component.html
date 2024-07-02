@@ -3,27 +3,44 @@
   <!-- <div>side bar</div> -->
   <div style="display: grid; grid-template-columns: 20rem auto;">
     <div style="margin-top: 2rem;">
-      <div style="display: grid; grid-template-columns: auto auto auto auto auto auto auto;">
-        @for ( day of mounth ; track $index){
-          <div  class="day-item">{{day}}</div>
+      <div style="display: grid; padding: 1rem;" >
+        <div style="display: flex; justify-content: space-between; align-items: center;" >
+          <div>{{thisMounth | date:'MMM YYYY'}}</div>
+          <div style="display: flex; justify-content: space-between; column-gap: 0.5rem;">
+            <button class="mounth-changer-button" (click)="handleChangeMonth('decremant')"><</button>
+            <button class="mounth-changer-button" (click)="handleChangeMonth('incremant')">></button>
+          </div>
+        </div>
+        @for(moun of mounth ; track $index ; let i = $index){
+          <div style="display: grid; grid-template-columns: auto auto auto auto auto auto auto;">
+            @for ( day of moun ; track $index ; let j = $index){
+              @if (day === ""){
+                <div style="width: 3rem; height: 3rem;"></div>
+              } @else{
+
+                <div  class="day-item" [ngClass]="thisDayAndMount.isThisMonth === thisDayAndMount.thisMonth && day == thisDayAndMount.thisDay ? 'day-item-today' : 'day-item'" [id]="i+'-'+j" (click)="selectedWeekFunction($event)">{{day}}</div>
+              }
+            }
+
+          </div>
         }
       </div>
     </div>
     <div class="booking-container" style="width: 100%;">
       <h2>Book an Event</h2>
       <div class="booking-content">
-        <div style="margin-top: 22px;">
+        <div style="margin-top: 45px;">
           @for(time of times ; track time){
-            <div style="text-align: end; padding-right: 10px; margin-top: 10px;" key="time">{{time}}</div>
+            <div style="text-align: end; padding-right: 10px; margin-top: 10px; font-size: 10px;" key="time">{{time}}</div>
           }
         </div>
         <div>
           <div class="booking-weekDays" >
             @for( item of weekDays ; track item.text){
 
-               <div style="display: grid; justify-content: center;" key="item.text + item.date">
-                 <div >{{item.text}}</div>
-                 <div style="display: flex; justify-content: center;" >{{item.date}}</div>
+               <div style="display: grid; justify-content: center;font-size: 10px; margin-bottom: 3px;" key="item.text + item.date">
+                 <div style="display: flex; justify-content: center;" >{{item.text}}</div>
+                 <div [ngClass]="thisDayAndMount.isThisMonth === thisDayAndMount.thisMonth && item.date == thisDayAndMount.thisDay ? 'header-week-number-today' : 'header-week-number'" >{{item.date}}</div>
    
                </div>
             }
@@ -47,7 +64,6 @@
         <div class="dialog-overlay">
           <div class="dialog-box">
             <div class="dialog-header">
-              <h2>Dialog Header</h2>
               <button (click)="closeDialog()" class="close-button">&times;</button>
             </div>
             <div class="dialog-body">

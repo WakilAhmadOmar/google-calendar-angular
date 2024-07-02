@@ -2,20 +2,30 @@ import { Component , signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import {CdkDrag,  } from '@angular/cdk/drag-drop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { NgClass , DatePipe } from '@angular/common';
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet , CdkDrag , NgClass],
+  imports: [RouterOutlet , CdkDrag , NgClass , DatePipe],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'googleCalendar';
+  title = 'googleCalendar'; 
+  thisMounth = Date.now()
+  changeMonth = 0;
+  thisDayAndMount = {
+    thisDay:'0',
+    thisMonth:0,
+    isThisMonth:0
+  };
+  bookingTimes:[][] = []
   mouseDown:number = 0;
   showDialog = false;
-  mounth:string[]  = []
+   weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  mounth:string[][]  = []
   damyData = signal( [
     [
     {
@@ -757,47 +767,107 @@ export class AppComponent {
   
   return weekDates;
 }
-  getMounthDates (){
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const dayOfMonth = today.getDate();
+//   getMounthDates (){
+//   const today = new Date();
+//   const dayOfWeek = today.getDay();
+//   const dayOfMonth = today.getDate();
 
-  // Calculate how many days to subtract to get to Monday
-  // If today is Sunday (0), set it to 6 (previous Monday), otherwise dayOfWeek - 1
-  const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+//   // Calculate how many days to subtract to get to Monday
+//   // If today is Sunday (0), set it to 6 (previous Monday), otherwise dayOfWeek - 1
+//   const daysToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
 
-  // Create a new date object set to the Monday of this week
-  const monday = new Date(today);
-  monday.setDate(dayOfMonth - daysToMonday);
+//   // Create a new date object set to the Monday of this week
+//   const monday = new Date(today);
+//   monday.setDate(dayOfMonth - daysToMonday);
 
-  // Array to hold all days of the week formatted
-  const weekDates:string[] = [];
+//   // Array to hold all days of the week formatted
+//   const weekDates:string[] = [];
 
-  // Weekdays array for formatting
-  // const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+//   // Weekdays array for formatting
+//   // const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
-  // Loop 7 days to cover Monday to Sunday
-  for (let i = 0; i < 42; i++) {
-    // Create a new date object for each day of the week
-    const weekDay = new Date(monday);
-    weekDay.setDate(monday.getDate() + i);
+//   // Loop 7 days to cover Monday to Sunday
+//   for (let i = 0; i < 42; i++) {
+//     // Create a new date object for each day of the week
+//     const weekDay = new Date(monday);
+//     weekDay.setDate(monday.getDate() + i);
 
-    // Add the formatted date to the array
-    weekDates.push(
-      `${weekDay.toLocaleDateString('en-US', {
-      // month: '2-digit',
+//     // Add the formatted date to the array
+//     weekDates.push(
+//       `${weekDay.toLocaleDateString('en-US', {
+//       // month: '2-digit',
 
-      day: '2-digit',
-      // year: 'numeric'
-    })}`
-    );
-  }
-  this.mounth = weekDates
-  // console.log("mounthDates" , weekDates)
+//       day: '2-digit',
+//       // year: 'numeric'
+//     })}`
+//     );
+//   }
+//   this.mounth = weekDates
+//   // console.log("mounthDates" , weekDates)
   
-  return weekDates;
-}
+//   return weekDates;
+// }
 
+ getCurrentMonthCalendar() {
+  const now = new Date();
+  this.thisDayAndMount = {
+    thisDay:`${now.getDay()}`,
+    thisMonth:now.getMonth(),
+    isThisMonth:now.getMonth() + this.changeMonth
+  }
+  const year = now.getFullYear();
+  const month = now.getMonth() + this.changeMonth;
+
+  
+  // Get the current date
+const currentDate = new Date(Date.now());
+
+// Add one month to the current date
+const nextMonthDate = new Date(currentDate);
+nextMonthDate.setMonth(currentDate.getMonth() + this.changeMonth);
+
+// Convert the new date to milliseconds
+// const nextMonthInMilliseconds = nextMonthDate.getTime();
+this.thisMounth =  nextMonthDate.getTime()
+  // Get the first day of the month
+  const firstDay = new Date(year, month, 1).getDay();
+  // Get the last day of the month
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
+  // Create a 2D array for the calendar (6 weeks x 7 days)
+  const calendar = [];
+  let week = [];
+  let dayCounter = 1;
+
+  // Fill in the calendar
+  let lastDays = 0
+  for (let i = 0; i < 6; i++) {
+    week = [];
+    for (let j = 0; j < 7; j++) {
+      if ((i === 0 && j < firstDay) || dayCounter > lastDate) {
+        if (i === 0 && j < firstDay){
+          console.log("i === 0 && j < firstDay" , i, "=== 0","&&" + j ,"<", firstDay)
+          week.push(`${30 - (i + j)}`);
+        }else{
+          lastDays++
+          week.push(` ${lastDays} `);
+        }
+      } else {
+        week.push(`${dayCounter}`);
+        dayCounter++;
+      }
+    }
+    calendar.push(week);
+  }
+  this.mounth = calendar
+  this.weekDays = calendar[0]?.map((item , index) => { 
+    return {
+      date:item,
+      text:this.weekdays[index]
+    }
+  })
+  return calendar;
+}
  openDialog() {
    this.showDialog = true;
  }
@@ -816,8 +886,9 @@ export class AppComponent {
    this.mouseDown = 0
  }
   ngOnInit(): void {
-    this.getWeekDates();
-    this.getMounthDates();
+    // this.getWeekDates();
+    // this.getMounthDates();
+     this.getCurrentMonthCalendar()
   }
 
   handleClickFunction(event:any){
@@ -850,6 +921,25 @@ export class AppComponent {
     this.showDialog = true
   }
 
-  
+  selectedWeekFunction(event:any){
+    const indexes = event.target.id.split("-")
+    this.weekDays = this.mounth[indexes?.[0]]?.map((item , index) => { 
+      return {
+        date:item,
+        text:this.weekdays[index]
+      }
+    })
+  }
+
+  handleChangeMonth (id:string) {
+    if (id === "incremant"){
+      this.changeMonth++
+    }
+    if (id === "decremant"){
+      this.changeMonth--
+    }
+    this.getCurrentMonthCalendar()
+
+  }
 
 }

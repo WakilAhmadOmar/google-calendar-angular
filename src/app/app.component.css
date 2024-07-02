@@ -85,7 +85,7 @@ button {
 
 .dialog-box {
   background-color: #fff;
-  padding: 20px;
+  /* padding: 20px; */
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-width: 500px;
@@ -94,16 +94,28 @@ button {
 
 .dialog-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  background-color: rgba(228, 228, 228, 0.874);
+  padding: 3px;
 }
 
 .close-button {
-  /* background: none;
-    border: none; */
-  font-size: 1.5em;
+  font-size: 1.2em;
   width: fit-content;
   cursor: pointer;
+  width: 2.4rem;
+  height: 2.4rem;
+  background-color: rgba(228, 228, 228, 0.874);
+  /* background-color: #fff; */
+  color: gray;
+  border-radius: 50%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+.close-button:hover {
+  background-color: rgba(220, 220, 220, 0.737);
 }
 
 .dialog-body {
@@ -118,12 +130,68 @@ button {
   display: grid;
   justify-content: center;
   align-items: center;
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-
+  font-size: 12px;
+  
 }
 
-.day-item:hover{
+.day-item:hover {
   background-color: rgba(231, 231, 231, 0.83);
+}
+.day-item-today {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  font-size: 12px;
+  background-color: #007bff;
+  color:#FFF;
+}
+.day-item-today:hover {
+  background-color: #0253a9;
+}
+
+.mounth-changer-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #fff;
+  color: gray;
+  border-radius: 50%;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+}
+.mounth-changer-button:hover {
+  background-color: rgba(220, 220, 220, 0.737);
+}
+
+.header-week-number {
+  display: flex;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: 15px;
+  align-items: center;
+}
+.header-week-number:hover{
+  background-color: rgb(213, 213, 213);
+}
+.header-week-number-today{
+  display: flex;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  font-size: 15px;
+  align-items: center;
+  color: #FFF;
+  background-color: #007bff;
+}
+.header-week-number-today:hover {
+  background-color: #0253a9;
 }
